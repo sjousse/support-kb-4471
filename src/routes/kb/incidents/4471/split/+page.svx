@@ -1,0 +1,55 @@
+---
+layout: runbook
+title: '#4471 split · three problems, not one'
+owner: sjousse
+status: open
+reviewed: 2026-11-02
+signature: v1.eyJzdWIiOiIxODI4IiwiYXVkIjoiY2hhbGxlbmdlOndoYXQtaXQtc2hvd3MiLCJpYXQiOjE3OTM2NDI2NDEsImV4cCI6MTc5MzcyOTA0MX0.AmqVFrY4I3iIO-qoABLU3c9BBYqFCZErT72SKmE0N0I
+---
+
+<script>
+  import ProblemTable from '#lib/kb/ProblemTable.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+</script>
+
+[#4471](/kb/incidents/4471) was merged as one issue and marked known: "the parser reads dates
+month first". Read report by report, it holds three problems. One fix to the parser closes only
+the first one.
+
+<Callout kind="warn">
+#4471 is not one bug. Each problem below has its own ticket, with the reports it covers.
+</Callout>
+
+## The problems in #4471
+
+<ProblemTable ticket={4471} repo="sjousse/support-kb-4471" />
+
+## How each report was placed
+
+- **Count each report once.** The ticket system exports in pages that overlap, so some reports
+  come twice. `uniqueById` keeps one per id.
+- **Cause from the tenant, not from intake.** Intake's tag is a guess from the reporter's
+  browser. The cause comes from the tenant's locale and booking form (`causeOf` in
+  `causes.ts`, tenants in `src/lib/data/tenants`).
+- **A flipped date on a booking-v3 form is the hint.** booking-v3 prints `MM/DD/YYYY` under
+  its date field. People type what it says, and the form reads the date day first.
+- **A one-day move is not a flip.** The desk read some reports as a one-day move
+  (`desk-notes.json`): Tuesday shows as Monday, June bookings are a day off, and one meeting
+  happened on two days in Lisbon and Toronto. No day and month swap there. That points at time
+  zones, not the parser, so these reports get their own ticket instead of a footnote.
+
+## Why it was one ticket
+
+[Decision 0001](/kb/decisions/0001-dedupe-by-subject) merges reports whose subject lines match.
+All three problems produce the same subjects ("Wrong day on the invite", "Date is wrong"), so
+subject matching put them in one ticket. Engineering was meant to split them later; nobody did.
+
+## What to do
+
+1. Fix the shared parser for day-first locales (ticket 1).
+2. Change the booking-v3 date hint to the tenant's own order (ticket 2).
+3. Look at time-zone handling for invites and reminders (ticket 3).
+4. Close #4471 only when all three are closed.
+
+<RenderStamp {signature} />
