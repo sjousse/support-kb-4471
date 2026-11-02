@@ -22,7 +22,7 @@
 
 <table>
   <thead>
-    <tr><th>ticket</th><th>problem</th><th>reports</th><th>tenants</th><th>intake tagged as</th><th>seen</th></tr>
+    <tr><th>ticket</th><th>problem</th><th>state</th><th>reports</th><th>tenants</th><th>intake tagged as</th><th>seen</th></tr>
   </thead>
   <tbody>
     {#each result.groups as g (g.problem)}
@@ -30,6 +30,7 @@
       <tr>
         <td>{#if p.issue}<a href="https://github.com/{repo}/issues/{p.issue}">{repo}#{p.issue}</a>{:else}none{/if}</td>
         <td><b>{p.title}</b><br /><span class="what">{p.what}</span></td>
+        <td><span class="state" class:open={p.state === 'open'}>{p.state}</span><br /><span class="tags">{p.why}</span></td>
         <td class="n">{g.reports.length}{#if result.alsoIn(g.problem)}<br /><span class="tags">{result.alsoIn(g.problem)} also in the one-day move</span>{/if}</td>
         <td>{g.tenants.length}</td>
         <td class="tags">{fmt(g.taggedAs)}</td>
@@ -43,4 +44,6 @@
   .sum { font-size: 1.1rem; }
   .what, .tags { color: var(--muted); font-size: 0.85em; }
   .n { font-weight: 600; }
+  .state { font-weight: 600; color: var(--accent); white-space: nowrap; }
+  .state.open { color: var(--warn); }
 </style>

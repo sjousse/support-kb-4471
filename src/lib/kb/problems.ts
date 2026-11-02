@@ -7,23 +7,32 @@ import { causeOf, uniqueById, type Report, type Tenant } from './causes.ts';
 
 export type Problem = 'parser' | 'hint' | 'one-day-move' | 'unplaced';
 
-export const PROBLEMS: Record<Problem, { title: string; issue: number | null; what: string }> = {
+// Where each ticket stands. From engineering's update on #4471 (closed 05 Oct).
+export type State = { state: 'open' | 'fixed' | "won't fix"; why: string };
+
+export const PROBLEMS: Record<Problem, { title: string; issue: number | null; what: string } & State> = {
   parser: {
     title: 'Shared parser reads dates month first for day-first tenants',
     issue: 1,
     what: 'A day-first date (7/4 = 7 April) is read as 4 July: day and month swap.',
+    state: 'fixed',
+    why: 'fix(dates): parse dd/mm for eu locales',
   },
   hint: {
     title: 'booking-v3 form hint says MM/DD/YYYY to day-first tenants',
     issue: 2,
     what: 'People type what the hint says, month first; the form reads it the tenant’s way, day first.',
+    state: "won't fix",
+    why: 'booking-v3 form retired',
   },
   'one-day-move': {
     title: 'Dates move by one day: not a day/month flip',
     issue: 3,
     what: 'The day is off by one (Tuesday shows as Monday, June bookings a day off, one meeting on two days).',
+    state: 'open',
+    why: 'not in engineering’s update; the parser fix does not explain a one-day move',
   },
-  unplaced: { title: 'No cause found', issue: null, what: 'Tenant not on file or not day-first.' },
+  unplaced: { title: 'No cause found', issue: null, what: 'Tenant not on file or not day-first.', state: 'open', why: '' },
 };
 
 export function problemsOf(r: Report, t: Tenant | undefined, oneDayMove: readonly string[]): Problem[] {

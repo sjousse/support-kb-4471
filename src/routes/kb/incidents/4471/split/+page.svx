@@ -19,11 +19,22 @@ the first one.
 
 <Callout kind="warn">
 #4471 is not one bug. Each problem below has its own ticket, with the reports it covers.
+#4471 closed on 05 Oct, but the one-day move is still open.
 </Callout>
 
 ## The problems in #4471
 
 <ProblemTable ticket={4471} repo="sjousse/support-kb-4471" />
+
+## Engineering update
+
+#4471 closed on 05 Oct. Engineering answered two of the three problems:
+
+- **parser: fixed**, "fix(dates): parse dd/mm for eu locales". Ticket 1 is closed as completed.
+- **hint: won't fix**, "booking-v3 form retired". With the form gone, its hint is gone too.
+  Ticket 2 is closed as not planned.
+- **one-day move: not in the update.** The parser fix does not explain a date that moves by one
+  day, so ticket 3 stays open.
 
 ## How each report was placed
 
@@ -48,9 +59,9 @@ subject matching put them in one ticket. Engineering was meant to split them lat
 
 ## What to do
 
-1. Fix the shared parser for day-first locales (ticket 1).
-2. Change the booking-v3 date hint to the tenant's own order (ticket 2).
-3. Look at time-zone handling for invites and reminders (ticket 3).
-4. Close #4471 only when all three are closed.
+1. Done: the shared parser reads day-first locales (ticket 1, fixed).
+2. Done: booking-v3 is retired, and its hint with it (ticket 2, won't fix).
+3. Open: look at time-zone handling for invites and reminders (ticket 3). A new report that moves
+   a date by one day belongs there, not in a closed #4471.
 
 <RenderStamp {signature} />
