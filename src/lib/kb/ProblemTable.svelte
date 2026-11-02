@@ -17,7 +17,7 @@
 
 <p class="sum">
   <strong>{result.unique}</strong> reports merged into #{ticket} ({result.rows} rows in the export; a report counts once) ·
-  <strong>{result.groups.length}</strong> {result.groups.length === 1 ? 'problem' : 'problems'}
+  <strong>{result.groups.length}</strong> {result.groups.length === 1 ? 'problem' : 'problems'} · counted as the desk files them
 </p>
 
 <table>
@@ -30,7 +30,7 @@
       <tr>
         <td>{#if p.issue}<a href="https://github.com/{repo}/issues/{p.issue}">{repo}#{p.issue}</a>{:else}none{/if}</td>
         <td><b>{p.title}</b><br /><span class="what">{p.what}</span></td>
-        <td class="n">{g.reports.length}</td>
+        <td class="n">{g.reports.length}{#if result.alsoIn(g.problem)}<br /><span class="tags">{result.alsoIn(g.problem)} also in the one-day move</span>{/if}</td>
         <td>{g.tenants.length}</td>
         <td class="tags">{fmt(g.taggedAs)}</td>
         <td class="tags">{g.firstSeen} → {g.lastSeen}</td>

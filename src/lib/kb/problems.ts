@@ -1,6 +1,8 @@
 // The problems #4471 holds. causes.ts tells a flipped date's cause from the tenant; the desk's
 // notes (desk-notes.json) list the reports people read as a one-day move, which is no flip at all.
-// Each problem is its own ticket in this repo's issues.
+// Each problem is its own ticket in this repo's issues. Counts follow the desk's own view
+// (CauseTable): a report counts where causes.ts files it, so the one-day moves stay in their
+// tenant's cause and are also listed under their own problem.
 import { causeOf, uniqueById, type Report, type Tenant } from './causes.ts';
 
 export type Problem = 'parser' | 'hint' | 'one-day-move' | 'unplaced';
@@ -24,9 +26,9 @@ export const PROBLEMS: Record<Problem, { title: string; issue: number | null; wh
   unplaced: { title: 'No cause found', issue: null, what: 'Tenant not on file or not day-first.' },
 };
 
-export function problemOf(r: Report, t: Tenant | undefined, oneDayMove: readonly string[]): Problem {
-  if (oneDayMove.includes(r.id)) return 'one-day-move';
-  return causeOf(r, t) ?? 'unplaced';
+export function problemsOf(r: Report, t: Tenant | undefined, oneDayMove: readonly string[]): Problem[] {
+  const filed: Problem = causeOf(r, t) ?? 'unplaced';
+  return oneDayMove.includes(r.id) ? [filed, 'one-day-move'] : [filed];
 }
 
 export type ProblemGroup = {
@@ -48,8 +50,7 @@ export function groupByProblem(
   const merged = uniqueById(all).filter((r) => r.mergedInto === ticket);
   const by = new Map<Problem, Report[]>();
   for (const r of merged) {
-    const p = problemOf(r, tenantOf(r), oneDayMove);
-    by.set(p, [...(by.get(p) ?? []), r]);
+    for (const p of problemsOf(r, tenantOf(r), oneDayMove)) by.set(p, [...(by.get(p) ?? []), r]);
   }
   const count = (rs: Report[], k: (r: Report) => string) =>
     rs.reduce<Record<string, number>>((n, r) => ({ ...n, [k(r)]: (n[k(r)] ?? 0) + 1 }), {});
@@ -67,5 +68,7 @@ export function groupByProblem(
       };
     })
     .sort((a, b) => b.reports.length - a.reports.length);
-  return { rows: all.filter((r) => r.mergedInto === ticket).length, unique: merged.length, groups };
+  // How many of a problem's reports are also listed under another problem.
+  const alsoIn = (p: Problem) => (p === 'one-day-move' ? 0 : (by.get(p) ?? []).filter((r) => oneDayMove.includes(r.id)).length);
+  return { rows: all.filter((r) => r.mergedInto === ticket).length, unique: merged.length, groups, alsoIn };
 }

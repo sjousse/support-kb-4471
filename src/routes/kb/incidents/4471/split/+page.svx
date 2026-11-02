@@ -37,7 +37,8 @@ the first one.
 - **A one-day move is not a flip.** The desk read some reports as a one-day move
   (`desk-notes.json`): Tuesday shows as Monday, June bookings are a day off, and one meeting
   happened on two days in Lisbon and Toronto. No day and month swap there. That points at time
-  zones, not the parser, so these reports get their own ticket instead of a footnote.
+  zones, not the parser, so these reports get their own ticket instead of a footnote. They are
+  still counted where the desk files them, under their tenant's cause, as the desk's own table does.
 
 ## Why it was one ticket
 
